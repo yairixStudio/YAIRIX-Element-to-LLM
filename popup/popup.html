@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="popup.css" />
+  <title>YAIRIX - Element to LLM</title>
+</head>
+<body>
+  <header>
+    <div class="logo">⌖</div>
+    <div>
+      <h1>YAIRIX - Element to LLM</h1>
+      <p class="sub">Pick an element → copy for your AI</p>
+    </div>
+  </header>
+
+  <div class="seg" id="mode">
+    <button class="seg-btn" data-mode="copy">Click = Copy</button>
+    <button class="seg-btn" data-mode="collect">Collect package</button>
+  </div>
+
+  <button id="toggle" class="toggle">
+    <span class="dot"></span>
+    <span id="toggle-label">Start picking</span>
+  </button>
+
+  <p id="status" class="status" role="status"></p>
+
+  <!-- Package panel (collect mode) -->
+  <div class="package" id="package">
+    <div class="pkg-head">
+      <span>Package</span>
+      <span class="pkg-count" id="pkg-count">0 elements</span>
+    </div>
+    <div class="pkg-actions">
+      <button id="copy-all" class="btn primary">Copy all</button>
+      <button id="save-txt" class="btn ghost">Save .txt</button>
+      <button id="clear" class="btn ghost">Clear</button>
+    </div>
+  </div>
+
+  <div class="options">
+    <label class="opt">
+      <input type="checkbox" id="computedCss" />
+      <span>Include computed CSS</span>
+    </label>
+    <label class="opt">
+      <input type="checkbox" id="fullHtml" />
+      <span>Full outer HTML (instead of truncated text)</span>
+    </label>
+  </div>
+
+  <p class="shortcut">Shortcut: <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd> · <kbd>Esc</kbd> to exit</p>
+
+  <script src="popup.js"></script>
+</body>
+</html>
