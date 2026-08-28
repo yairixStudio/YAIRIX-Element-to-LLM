@@ -2,7 +2,7 @@
  * Two modes:
  *   "copy"    — click an element to copy its description immediately.
  *   "collect" — click an element, write a note, add it to a package.
- *               The package is copied as one block from the popup.
+ *               The package is built into an editable prompt in the panel.
  */
 (() => {
   "use strict";
@@ -14,7 +14,13 @@
   const MAX_OUTER_HTML = 4000;
 
   let active = false;
-  let options = { mode: "collect", computedCss: false, fullHtml: false };
+  let options = {
+    mode: "collect",
+    computedCss: false,
+    fullHtml: false,
+    includeUrl: false,
+    keepPicking: true
+  };
   let noteOpen = false;
   let pendingItem = null;
 
@@ -173,7 +179,7 @@
   // --- Item model + formatting -------------------------------------------
   function buildItem(el) {
     const r = el.getBoundingClientRect();
-    return {
+    const item = {
       descriptor: describeNode(el),
       path: domPath(el),
       position:
@@ -182,10 +188,14 @@
       html: htmlLine(el),
       css: options.computedCss ? computedCss(el) : null
     };
+    if (options.includeUrl) item.url = location.href;
+    return item;
   }
 
   function itemToText(item) {
-    let out =
+    let out = "";
+    if (item.url) out += `URL: ${item.url}\n`;
+    out +=
       `DOM Path: ${item.path}\n` +
       `Position: ${item.position}\n` +
       `HTML Element: ${item.html}`;
@@ -251,6 +261,7 @@
       });
     });
     closeNote();
+    if (!options.keepPicking) deactivate();
   }
 
   // --- Event handlers -----------------------------------------------------
@@ -414,10 +425,15 @@
   });
 
   // Restore saved options on load.
-  chrome.storage?.local.get(["mode", "computedCss", "fullHtml"], (v) => {
-    options.mode = v.mode === "copy" ? "copy" : "collect";
-    options.computedCss = !!v.computedCss;
-    options.fullHtml = !!v.fullHtml;
-    updateHint();
-  });
+  chrome.storage?.local.get(
+    ["mode", "computedCss", "fullHtml", "includeUrl", "keepPicking"],
+    (v) => {
+      options.mode = v.mode === "copy" ? "copy" : "collect";
+      options.computedCss = !!v.computedCss;
+      options.fullHtml = !!v.fullHtml;
+      options.includeUrl = !!v.includeUrl;
+      options.keepPicking = v.keepPicking !== false;
+      updateHint();
+    }
+  );
 })();

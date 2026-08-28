@@ -30,9 +30,15 @@
   <!-- Package panel (collect mode) -->
   <div class="package" id="package">
     <div class="pkg-head">
-      <span>Package</span>
+      <span>Prompt</span>
       <span class="pkg-count" id="pkg-count">0 elements</span>
     </div>
+    <textarea
+      id="prompt-text"
+      class="prompt-text"
+      spellcheck="false"
+      placeholder="Pick elements to build your prompt here — or just start typing."
+    ></textarea>
     <div class="pkg-actions">
       <button id="copy-all" class="btn primary">Copy all</button>
       <button id="save-txt" class="btn ghost">Save .txt</button>
@@ -49,9 +55,20 @@
       <input type="checkbox" id="fullHtml" />
       <span>Full outer HTML (instead of truncated text)</span>
     </label>
+    <label class="opt">
+      <input type="checkbox" id="includeUrl" />
+      <span>Include page URL with each note</span>
+    </label>
+    <label class="opt">
+      <input type="checkbox" id="keepPicking" />
+      <span>Keep picking after adding a note</span>
+    </label>
   </div>
 
-  <p class="shortcut">Shortcut: <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd> · <kbd>Esc</kbd> to exit</p>
+  <div class="shortcut-row">
+    <p class="shortcut">Shortcut: <kbd id="shortcut-label">Alt+Shift+E</kbd> · <kbd>Esc</kbd> to exit</p>
+    <button id="change-shortcut" class="btn ghost small" type="button">Change</button>
+  </div>
 
   <script src="sidepanel.js"></script>
 </body>

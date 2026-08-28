@@ -11,10 +11,12 @@ A lightweight Chrome extension for developers who work with AI coding assistants
 - **LLM-ready output** — every capture includes the DOM path (valid CSS selector chain), viewport position and size, and the element's HTML.
 - **Two modes**
   - *Click = Copy*: each click copies that element's description immediately.
-  - *Collect package*: click several elements, attach a "requested change" note to each, then copy the whole package as one prompt-ready block (or save it as a `.txt` file).
+  - *Collect package*: click several elements, attach a "requested change" note to each, and watch them land in a live, editable prompt box — type, tweak, or delete anything in it before copying (or saving it as a `.txt` file).
+- **Keep picking, or stop after one** — choose whether the picker stays active after you add a note or returns to normal, ready for the next click.
+- **Optional page URL per note** — tag each captured element with the URL of the page it came from, for multi-page change requests.
 - **Optional computed CSS** — include the key computed styles (layout, typography, colors, flex/grid) for pixel-accurate change requests.
 - **Full or truncated HTML** — compact opening-tag + text summary by default, or full `outerHTML` (safely truncated) when you need it.
-- **Keyboard friendly** — toggle the picker with `Alt+Shift+E`, exit with `Esc`.
+- **Keyboard friendly** — toggle the picker with `Alt+Shift+E` (rebindable from the panel), exit with `Esc`.
 - **Safe on huge pages** — attribute values and text are escaped and truncated, so a click on a giant element never floods your clipboard.
 
 ## Installation
@@ -36,7 +38,8 @@ A lightweight Chrome extension for developers who work with AI coding assistants
 1. Open the page you're working on and click the extension icon to open the side panel (or press `Alt+Shift+E` to toggle the picker directly).
 2. Choose a mode: **Click = Copy** or **Collect package**.
 3. Click **Start picking**, then click any element on the page — the panel stays docked open the whole time.
-4. Paste the result into your LLM chat.
+4. In **Collect package** mode, each picked element (plus your note) lands in the prompt box in the panel — edit it freely, then **Copy all** or **Save .txt**.
+5. Paste the result into your LLM chat.
 
 The panel follows whichever tab is active, so you can keep it open while you jump between pages.
 
