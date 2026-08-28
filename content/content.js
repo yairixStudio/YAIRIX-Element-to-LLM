@@ -336,6 +336,14 @@
         : "Click an element to copy  •  Esc to exit";
   }
 
+  // Tell the side panel the state changed on its own (Esc, keyboard shortcut)
+  // — unlike the old popup, the panel isn't re-created on every open, so it
+  // can't just re-query when it "opens". No receiver when the panel is
+  // closed, hence the swallowed rejection.
+  function notifyStateChange() {
+    chrome.runtime.sendMessage({ type: "etl-state", active }).catch(() => {});
+  }
+
   function activate() {
     if (active) return;
     active = true;
@@ -350,6 +358,7 @@
     document.addEventListener("keydown", onKey, true);
     window.addEventListener("scroll", onReflow, true);
     window.addEventListener("resize", onReflow, true);
+    notifyStateChange();
   }
 
   function deactivate() {
@@ -372,6 +381,7 @@
       clearTimeout(toast.__t);
       toast.classList.remove("__etl-toast-show");
     }
+    notifyStateChange();
   }
 
   function toggle() {

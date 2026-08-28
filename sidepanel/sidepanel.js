@@ -1,4 +1,7 @@
-/* Element to LLM — popup controller. */
+/* Element to LLM — side panel controller.
+ * The panel is global (not per-tab): it stays open across tab switches, so
+ * unlike the old popup it must actively track which tab is active.
+ */
 
 const toggleBtn = document.getElementById("toggle");
 const toggleLabel = document.getElementById("toggle-label");
@@ -108,7 +111,6 @@ toggleBtn.addEventListener("click", async () => {
   const res = await send({ type: "etl-toggle" });
   if (res) {
     renderActive(res.active);
-    if (res.active) window.close(); // free the page for interaction
   } else {
     showStatus("Can't pick on this page — try a regular website tab.");
   }
@@ -188,11 +190,65 @@ function pushOptions() {
 computedCss.addEventListener("change", pushOptions);
 fullHtml.addEventListener("change", pushOptions);
 
-// Live-update the package count while the popup is open.
+// Live-update the package count while the panel is open.
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && changes.collection) {
     renderPackage(changes.collection.newValue || []);
   }
+});
+
+// --- Track the active tab ------------------------------------------------
+// The panel stays open (that's the point) while the user switches tabs or
+// windows, so — unlike the old popup, which was re-created fresh on every
+// open — it has to re-sync itself to whichever tab becomes active.
+// Guards against overlapping runs: the direct-sendMessage path is near-
+// instant while the inject-then-send fallback takes far longer, so a fast
+// tab switch can let a slow, now-stale run resolve last and clobber a
+// correct result with a wrong one. Only the freshest call may render.
+let refreshToken = 0;
+
+async function refreshForActiveTab() {
+  const token = ++refreshToken;
+  const tab = await activeTab();
+  if (!tab || token !== refreshToken) return;
+
+  if (isRestricted(tab)) {
+    toggleBtn.disabled = true;
+    toggleBtn.classList.add("disabled");
+    showStatus("Pickers can't run on browser pages. Open a regular website.");
+    renderActive(false);
+    return;
+  }
+
+  // Ask the content script for the authoritative picker state so the panel
+  // never shows a stale toggle after Esc / keyboard-shortcut changes.
+  const res = await send({ type: "etl-status" });
+  if (token !== refreshToken) return; // a newer refresh superseded this one
+  if (res) {
+    toggleBtn.disabled = false;
+    toggleBtn.classList.remove("disabled");
+    showStatus("");
+    renderActive(res.active);
+  } else {
+    toggleBtn.disabled = true;
+    toggleBtn.classList.add("disabled");
+    showStatus("Pickers can't run on browser pages. Open a regular website.");
+    renderActive(false);
+  }
+}
+
+chrome.tabs.onActivated.addListener(refreshForActiveTab);
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === "complete" && tab.active) refreshForActiveTab();
+});
+chrome.windows.onFocusChanged.addListener((windowId) => {
+  if (windowId !== chrome.windows.WINDOW_ID_NONE) refreshForActiveTab();
+});
+
+// The content script pushes its own activate/deactivate (Esc, keyboard
+// shortcut) since the panel has no "on open" moment to catch up at.
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg?.type === "etl-state") refreshForActiveTab();
 });
 
 // --- Init ---------------------------------------------------------------
@@ -203,18 +259,5 @@ chrome.storage.onChanged.addListener((changes, area) => {
   fullHtml.checked = !!v.fullHtml;
   renderMode();
   await loadPackage();
-
-  const tab = await activeTab();
-  if (isRestricted(tab)) {
-    toggleBtn.disabled = true;
-    toggleBtn.classList.add("disabled");
-    showStatus("Pickers can't run on browser pages. Open a regular website.");
-    renderActive(false);
-    return;
-  }
-
-  // Ask the content script for the authoritative picker state so the popup
-  // never shows a stale toggle after Esc / keyboard-shortcut changes.
-  const res = await send({ type: "etl-status" });
-  renderActive(res?.active);
+  await refreshForActiveTab();
 })();

@@ -1,6 +1,13 @@
 /* Element to LLM — service worker.
- * Routes the keyboard command to the active tab's content script.
+ * Opens the side panel on toolbar icon click and routes the keyboard
+ * command to the active tab's content script.
  */
+
+// Must run at top level so it re-registers every time the worker restarts
+// (it's suspended/woken frequently — a listener body wouldn't survive that).
+chrome.sidePanel
+  .setPanelBehavior({ openPanelOnActionClick: true })
+  .catch((error) => console.error(error));
 
 // Pages where content scripts can never run.
 function isRestrictedUrl(url) {

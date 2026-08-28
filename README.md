@@ -6,6 +6,7 @@ A lightweight Chrome extension for developers who work with AI coding assistants
 
 ## Features
 
+- **Lives in Chrome's side panel** — docked next to the page, not a popup that vanishes when you click away. Stays open as you switch tabs.
 - **One-click element capture** — hover to highlight, click to copy. A live label shows the element's selector as you move.
 - **LLM-ready output** — every capture includes the DOM path (valid CSS selector chain), viewport position and size, and the element's HTML.
 - **Two modes**
@@ -32,10 +33,12 @@ A lightweight Chrome extension for developers who work with AI coding assistants
 
 ## Usage
 
-1. Open the page you're working on and click the extension icon (or press `Alt+Shift+E`).
+1. Open the page you're working on and click the extension icon to open the side panel (or press `Alt+Shift+E` to toggle the picker directly).
 2. Choose a mode: **Click = Copy** or **Collect package**.
-3. Click **Start picking**, then click any element on the page.
+3. Click **Start picking**, then click any element on the page — the panel stays docked open the whole time.
 4. Paste the result into your LLM chat.
+
+The panel follows whichever tab is active, so you can keep it open while you jump between pages.
 
 Example output for a clicked button:
 
@@ -71,7 +74,7 @@ Everything happens locally in your browser. The extension makes **no network req
 
 ## Keywords
 
-chrome extension, llm, ai coding, dom inspector, css selector, element picker, prompt engineering, claude, chatgpt, developer tools
+chrome extension, llm, ai coding, dom inspector, css selector, element picker, prompt engineering, claude, chatgpt, developer tools, side panel
 
 ## Author
 
